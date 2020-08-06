@@ -125,7 +125,8 @@ RTPInterface::RTPInterface(Medium* owner, Groupsock* gs)
   // even if the socket was previously reported (e.g., by "select()") as having data available.
   // (This can supposedly happen if the UDP checksum fails, for example.)
   makeSocketNonBlocking(fGS->socketNum());
-  increaseSendBufferTo(envir(), fGS->socketNum(), 50*1024);
+  // increaseSendBufferTo(envir(), fGS->socketNum(), 50*1024);
+  increaseSendBufferTo(envir(), fGS->socketNum(), 100*1024);
 }
 
 RTPInterface::~RTPInterface() {
@@ -220,6 +221,7 @@ Boolean RTPInterface::sendPacket(unsigned char* packet, unsigned packetSize) {
   if (!fGS->output(envir(), packet, packetSize)) success = False;
 
   // Also, send over each of our TCP sockets:
+  #if 0 
   tcpStreamRecord* nextStream;
   for (tcpStreamRecord* stream = fTCPStreams; stream != NULL; stream = nextStream) {
     nextStream = stream->fNext; // Set this now, in case the following deletes "stream":
@@ -228,7 +230,7 @@ Boolean RTPInterface::sendPacket(unsigned char* packet, unsigned packetSize) {
       success = False;
     }
   }
-
+#endif
   return success;
 }
 
